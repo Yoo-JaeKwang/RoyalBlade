@@ -42,7 +42,7 @@ public class MonsterManager : MonoBehaviour
         {
             Monster monster = _monsterPools[ID].GetMonsterFromPool();
             monster.transform.SetParent(Container);
-            monster.transform.position += Vector3.up * (offset * i);
+            monster.transform.localPosition = Vector3.up * (offset * i);
             monster.transform.localScale = Random.Range(0, 2) == 0 ? _left : _right;
         }
     }

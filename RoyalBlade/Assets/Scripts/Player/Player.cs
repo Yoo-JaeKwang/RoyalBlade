@@ -47,8 +47,8 @@ public class Player : MonoBehaviour
             _comboCount = 1;
         }
 
-        Collider2D collider = Physics2D.OverlapBox(transform.position + (Vector3.up * 400), Vector2.one * 100, 0);
-        Debug.Log(collider);
+        Collider2D collider = Physics2D.OverlapBox(transform.position + (Vector3.up * 50), Vector2.one * 50, 0, 7) 
+            ?? Physics2D.OverlapBox(transform.position + (Vector3.up * 200), Vector2.one * 200, 0, 7);
         if (collider == null)
         {
             return;
