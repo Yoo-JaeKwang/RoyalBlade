@@ -1,6 +1,14 @@
 ﻿using UnityEngine;
 public static class UnityExtensions
 {
+    public static Transform FindAssert(this Transform transform, string name)
+    {
+        Transform newTransform = transform.Find(name);
+
+        Debug.Assert(newTransform != null);
+
+        return newTransform;
+    }
     public static T GetComponentAssert<T>(this GameObject gameObject)
     {
         T component = gameObject.GetComponent<T>();
