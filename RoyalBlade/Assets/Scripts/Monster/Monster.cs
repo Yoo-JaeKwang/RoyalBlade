@@ -5,23 +5,39 @@ using Util;
 public abstract class Monster : MonoBehaviour
 {
     public event Action<int> OnDead;
-    private int _hp;
-    private int _score;
-    public void Init(int hp, int score)
+    public int Default_HP;
+    public int HP { get; private set; }
+    public int Score { get; private set; }
+    public int Index { get; private set; }
+    public void Init(int hp, int score, int index)
     {
-        _hp = hp;
-        _score = score;
+        HP = hp;
+        Score = score;
+        Index = index;
     }
 
     public void OnAttack(int damage)
     {
-        _hp -= damage;
-        if (_hp <= 0)
-        {
-            _pool.Release(this);
-        }
+        HP -= damage;
+        MonsterModel.SetCurHealth(HP);
 
-        OnDead?.Invoke(_score);
+        if (HP <= 0)
+        {
+            OnDead?.Invoke(Score);
+            _pool.Release(this);
+
+            Monster next = Managers.Instance.MonsterManager.CurMonsters[Index + 1];
+            if (next == null)
+            {
+                HP = 0;
+                MonsterModel.SetCurHealth(HP);
+                Managers.Instance.MonsterManager.CurMonsters.Clear();
+                return;
+            }
+
+            MonsterModel.SetCurHealth(next.HP);
+            MonsterModel.SetMaxHealth(next.HP);
+        }
     }
 
     private Util.ObjectPool<Monster> _pool;
