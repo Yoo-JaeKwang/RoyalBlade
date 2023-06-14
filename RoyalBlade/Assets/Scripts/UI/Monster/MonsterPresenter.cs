@@ -31,11 +31,11 @@ public class MonsterPresenter : Presenter
     }
     private void UpdateCurText(int value)
     {
-        _monsterView.CurHPText.text = value.ToString();
+        _monsterView.CurHPText.text = Util.Nums.GetNumString(value);
     }
     private void UpdateMaxText(int value)
     {
-        _monsterView.MaxHPText.text = value.ToString();
+        _monsterView.MaxHPText.text = Util.Nums.GetNumString(value);
     }
     protected override void OnOccuredUserEvent()
     {

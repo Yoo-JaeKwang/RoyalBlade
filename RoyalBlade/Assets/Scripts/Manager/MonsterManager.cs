@@ -51,10 +51,11 @@ public class MonsterManager : MonoBehaviour
             int hp = monster.Default_HP * (int)Mathf.Pow(2, _wave - 1);
             monster.Init(hp, hp * 10, i);
 
+            monster.OnDead -= Managers.Instance.GameManager.OnGetScore;
+            monster.OnDead += Managers.Instance.GameManager.OnGetScore;
+
             CurMonsters.Add(monster);
         }
-
-        CurMonsters.Add(null);
 
         MonsterModel.SetCurHealth(CurMonsters[0].HP);
         MonsterModel.SetMaxHealth(CurMonsters[0].HP);

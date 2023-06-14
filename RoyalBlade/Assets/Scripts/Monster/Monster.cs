@@ -24,10 +24,11 @@ public abstract class Monster : MonoBehaviour
         if (HP <= 0)
         {
             OnDead?.Invoke(Score);
+            OnDead -= Managers.Instance.GameManager.OnGetScore;
+
             _pool.Release(this);
 
-            Monster next = Managers.Instance.MonsterManager.CurMonsters[Index + 1];
-            if (next == null)
+            if (Managers.Instance.MonsterManager.CurMonsters.Count == Index + 1)
             {
                 HP = 0;
                 MonsterModel.SetCurHealth(HP);
@@ -35,11 +36,18 @@ public abstract class Monster : MonoBehaviour
                 return;
             }
 
+            Monster next = Managers.Instance.MonsterManager.CurMonsters[Index + 1];
             MonsterModel.SetCurHealth(next.HP);
             MonsterModel.SetMaxHealth(next.HP);
         }
     }
-
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == Util.Layer.Ground)
+        {
+            Managers.Instance.GameManager.OnAttack();
+        }
+    }
     private Util.ObjectPool<Monster> _pool;
     /// <summary>
     /// 반환되어야할 풀의 주소를 설정합니다.

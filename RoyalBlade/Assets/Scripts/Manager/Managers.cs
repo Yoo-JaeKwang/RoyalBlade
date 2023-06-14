@@ -3,6 +3,7 @@
 public class Managers : MonoBehaviour
 {
     public static Managers Instance;
+    public GameManager GameManager { get; private set; }
     public MonsterManager MonsterManager { get; private set; }
     private void Awake()
     {
@@ -13,6 +14,7 @@ public class Managers : MonoBehaviour
     }
     private void SetManager()
     {
+        GameManager = gameObject.GetComponentInChildrenAssert<GameManager>();
         MonsterManager = gameObject.GetComponentInChildrenAssert<MonsterManager>();
     }
 }
