@@ -15,7 +15,12 @@ public abstract class Monster : MonoBehaviour
         Score = score;
         Index = index;
     }
-
+    public void OnDefense()
+    {
+        Rigidbody2D rb = Managers.Instance.MonsterManager.Container.GetComponentAssert<Rigidbody2D>();
+        rb.velocity = default;
+        rb.AddForce(Vector2.up * 200_000_000);
+    }
     public void OnAttack(int damage)
     {
         HP -= damage;

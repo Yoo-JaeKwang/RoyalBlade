@@ -1,6 +1,5 @@
 ﻿using UniRx;
 using UniRx.Triggers;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlayerPresenter : Presenter
@@ -46,7 +45,8 @@ public class PlayerPresenter : Presenter
     {
         _playerView.JumpButton.OnPointerDownAsObservable().Subscribe(OnJumpButtonDown).AddTo(_compositeDisposable);
         _playerView.JumpButton.OnPointerUpAsObservable().Subscribe(OnJumpButtonUp).AddTo(_compositeDisposable);
-
+        _playerView.DefenseButton.OnPointerDownAsObservable().Subscribe(OnDefenseButtonDown).AddTo(_compositeDisposable);
+        _playerView.DefenseButton.OnPointerUpAsObservable().Subscribe(OnDefenseButtonUp).AddTo(_compositeDisposable);
         _playerView.AttackButton.OnPointerDownAsObservable().Subscribe(OnAttack).AddTo(_compositeDisposable);
 
     }
@@ -57,6 +57,14 @@ public class PlayerPresenter : Presenter
     private void OnJumpButtonUp(PointerEventData pointerEventData)
     {
         PlayerModel.JumpStart();
+    }
+    private void OnDefenseButtonDown(PointerEventData pointerEventData)
+    {
+        PlayerModel.DefenseStart();
+    }
+    private void OnDefenseButtonUp(PointerEventData pointerEventData)
+    {
+        PlayerModel.DefenseExit();
     }
     private void OnAttack(PointerEventData pointerEventData)
     {

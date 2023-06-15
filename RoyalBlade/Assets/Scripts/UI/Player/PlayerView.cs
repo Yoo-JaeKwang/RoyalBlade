@@ -8,7 +8,7 @@ public class PlayerView : View
     public Image[] HPOnImages { get; private set; }
     public TMP_Text ScoreText { get; private set; }
     public Button JumpButton { get; private set; }
-    public Button ShieldButton { get; private set; }
+    public Button DefenseButton { get; private set; }
     public Button AttackButton { get; private set; }
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class PlayerView : View
         }
         ScoreText = transform.Find("ScoreText").GetComponentAssert<TMP_Text>();
         JumpButton = transform.Find("JumpButton").GetComponentAssert<Button>();
-        ShieldButton = transform.Find("ShieldButton").GetComponentAssert<Button>();
+        DefenseButton = transform.Find("DefenseButton").GetComponentAssert<Button>();
         AttackButton = transform.Find("AttackButton").GetComponentAssert<Button>();
     }
 }

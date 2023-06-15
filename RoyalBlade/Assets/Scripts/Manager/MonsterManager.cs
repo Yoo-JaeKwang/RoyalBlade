@@ -6,25 +6,32 @@ public class MonsterManager : MonoBehaviour
     public Monster[] Monsters;
     public List<Monster> CurMonsters = new();
     public Transform Container;
+    private Rigidbody2D _conRb;
     private Vector3 _startPos;
     private Dictionary<MonsterID, MonsterPool> _monsterPools = new();
     private void Start()
     {
+        _conRb = Container.GetComponentAssert<Rigidbody2D>();
         _startPos = Container.transform.position;
         SetMonsterPool();
     }
+    private readonly Vector2 _vel = new(0, -750);
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M))
         {
             SummonMonster(MonsterID.Wood_01);
+        }
+        if (_conRb.velocity.y < -750)
+        {
+            _conRb.velocity = _vel;
         }
     }
     private void SetMonsterPool()
     {
         for (int i = 1; i < Monsters.Length; ++i)
         {
-            Debug.Assert(_monsterPools.ContainsKey((MonsterID)i));
+            Debug.Assert(false == _monsterPools.ContainsKey((MonsterID)i));
 
             MonsterPool monsterPool = new();
             monsterPool.Initialize(i);
@@ -40,7 +47,7 @@ public class MonsterManager : MonoBehaviour
     {
         Container.transform.position = _startPos;
         Container.gameObject.GetComponentAssert<Rigidbody2D>().velocity = default;
-        float offset = Monsters[(int)ID].gameObject.GetComponentAssert<BoxCollider2D>().size.y;
+        float offset = Monsters[(int)ID].transform.Find("Body").GetComponentAssert<BoxCollider2D>().size.y;
         for (int i = 0; i < _summonCount; ++i)
         {
             Monster monster = _monsterPools[ID].GetMonsterFromPool();
