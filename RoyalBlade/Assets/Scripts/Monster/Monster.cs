@@ -2,7 +2,7 @@
 using UnityEngine;
 using Util;
 
-public abstract class Monster : MonoBehaviour
+public class Monster : MonoBehaviour
 {
     public event Action<int> OnDead;
     public int Default_HP;
@@ -29,7 +29,6 @@ public abstract class Monster : MonoBehaviour
         if (HP <= 0)
         {
             OnDead?.Invoke(Score);
-            OnDead -= Managers.Instance.GameManager.OnGetScore;
 
             _pool.Release(this);
 
@@ -38,19 +37,13 @@ public abstract class Monster : MonoBehaviour
                 HP = 0;
                 MonsterModel.SetCurHealth(HP);
                 Managers.Instance.MonsterManager.CurMonsters.Clear();
+                Managers.Instance.MonsterManager.SummonMonster();
                 return;
             }
 
             Monster next = Managers.Instance.MonsterManager.CurMonsters[Index + 1];
             MonsterModel.SetCurHealth(next.HP);
             MonsterModel.SetMaxHealth(next.HP);
-        }
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer == Util.Layer.Ground)
-        {
-            Managers.Instance.GameManager.OnAttack();
         }
     }
     private Util.ObjectPool<Monster> _pool;

@@ -23,6 +23,8 @@ public class PlayerPresenter : Presenter
     {
         PlayerModel.HP.Subscribe(UpdateHP).AddTo(_compositeDisposable);
         PlayerModel.Score.Subscribe(UpdateScore).AddTo(_compositeDisposable);
+        PlayerModel.ATK.Subscribe(UpdateATK).AddTo(_compositeDisposable);
+        PlayerModel.IsOnAttack.Subscribe(UpdateOnAttack).AddTo(_compositeDisposable);
     }
     private void UpdateHP(int value)
     {
@@ -39,8 +41,14 @@ public class PlayerPresenter : Presenter
     {
         _playerView.ScoreText.text = Util.Nums.GetNumString(value);
     }
-
-
+    private void UpdateATK(int value)
+    {
+        _playerView.ATKText.text = Util.Nums.GetNumString(value);
+    }
+    private void UpdateOnAttack(bool value)
+    {
+        _playerView.OnAttack();
+    }
     protected override void OnOccuredUserEvent()
     {
         _playerView.JumpButton.OnPointerDownAsObservable().Subscribe(OnJumpButtonDown).AddTo(_compositeDisposable);
@@ -48,7 +56,7 @@ public class PlayerPresenter : Presenter
         _playerView.DefenseButton.OnPointerDownAsObservable().Subscribe(OnDefenseButtonDown).AddTo(_compositeDisposable);
         _playerView.DefenseButton.OnPointerUpAsObservable().Subscribe(OnDefenseButtonUp).AddTo(_compositeDisposable);
         _playerView.AttackButton.OnPointerDownAsObservable().Subscribe(OnAttack).AddTo(_compositeDisposable);
-
+        _playerView.ATKBuyButton.OnPointerDownAsObservable().Subscribe(OnBuy).AddTo(_compositeDisposable);
     }
     private void OnJumpButtonDown(PointerEventData pointerEventData)
     {
@@ -69,5 +77,9 @@ public class PlayerPresenter : Presenter
     private void OnAttack(PointerEventData pointerEventData)
     {
         PlayerModel.Attack();
+    }
+    private void OnBuy(PointerEventData pointerEventData)
+    {
+        PlayerModel.Buy();
     }
 }

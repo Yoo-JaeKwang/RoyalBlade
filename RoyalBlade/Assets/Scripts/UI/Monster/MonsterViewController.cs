@@ -2,7 +2,7 @@
 {
     protected override void Initialize()
     {
-        View = transform.Find("MonsterView").GetComponentAssert<MonsterView>();
+        View = transform.FindAssert("MonsterView").GetComponentAssert<MonsterView>();
         Presenter = new MonsterPresenter();
     }
 }

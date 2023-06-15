@@ -5,10 +5,10 @@ public class AttackEffect : MonoBehaviour
     private Vector3 _startPos;
     private Vector3 _startScale;
     private Color _startColor;
-    private readonly Vector3 End_Left_Pos = new(-200, 200, 0);
-    private readonly Vector3 End_Right_Pos = new(150, 200, 0);
-    private readonly Vector3 End_Left_Scale = new(0.7f, 0.7f, 0.7f);
-    private readonly Vector3 End_Right_Scale = new(-0.7f, 0.7f, 0.7f);
+    private readonly Vector3 End_Left_Pos = new(-150, 150, 0);
+    private readonly Vector3 End_Right_Pos = new(100, 150, 0);
+    private readonly Vector3 End_Left_Scale = new(0.5f, 0.5f, 0.5f);
+    private readonly Vector3 End_Right_Scale = new(-0.5f, 0.5f, 0.5f);
     private readonly Color End_Color = new(1, 1, 1, 0);
     private SpriteRenderer _sr;
     private float _elapsedTime;

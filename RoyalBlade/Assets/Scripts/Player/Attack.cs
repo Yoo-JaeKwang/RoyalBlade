@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
     private BoxCollider2D _col;
     private void Awake()
     {
-        _player = transform.root.GetComponentAssert<Player>();
+        _player = transform.parent.GetComponentAssert<Player>();
         _col = gameObject.GetComponentAssert<BoxCollider2D>();
         _col.enabled = false;
         _attackCo = AttackCo();

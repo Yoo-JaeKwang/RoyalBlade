@@ -1,13 +1,11 @@
 using Cysharp.Text;
-using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public static Player Instance;
-
     public float JumpSpeed = 100_000;
-    private int _damage = 20;
+    private int _damage = 1;
     private bool _isJump = false;
     private Rigidbody2D _rb;
     private GameObject _jumpEffect;
@@ -15,29 +13,68 @@ public class Player : MonoBehaviour
     private Animator _am;
     private CircleCollider2D _col;
     private Attack _attack;
+    private Camera _cam;
+    private Vector3 _camStartPos;
+    public DamageText DamageText;
+    private Transform _damageTexts;
+    private DamageTextPool _damageTextPool = new();
+    public CoinEffect CoinEffect;
+    private Transform _effects;
+    private CoinEffectPool _coinEffectPool = new();
+    public DiaEffect DiaEffect;
+    private DiaEffectPool _diaEffectPool = new();
+
     private void Awake()
     {
         _rb = gameObject.GetComponentAssert<Rigidbody2D>();
         _am = gameObject.GetComponentAssert<Animator>();
         _col = gameObject.GetComponentAssert<CircleCollider2D>();
         _col.enabled = false;
+        _cam = Camera.main;
+        _camStartPos = _cam.transform.position;
 
-        Transform effects = transform.FindAssert("Effects");
-        _jumpEffect = effects.FindAssert("JumpEffect").gameObject;
+        _effects = transform.FindAssert("Effects");
+        _jumpEffect = _effects.FindAssert("JumpEffect").gameObject;
         _jumpEffect.transform.parent = default;
         _jumpEffect.SetActive(false);
         _attackEffects = new AttackEffect[5];
         for (int i = 1; i < _attackEffects.Length; ++i)
         {
-            _attackEffects[i] = effects.FindAssert(ZString.Concat("AttackEffect_0", Util.Nums.GetNumString(i))).GetComponentAssert<AttackEffect>();
+            _attackEffects[i] = _effects.FindAssert(ZString.Concat("AttackEffect_0", Util.Nums.GetNumString(i))).GetComponentAssert<AttackEffect>();
             _attackEffects[i].Init(i);
             _attackEffects[i].gameObject.SetActive(false);
         }
         _attack = transform.FindAssert("Attack").GetComponentAssert<Attack>();
+
+        _damageTexts = transform.FindAssert("DamageTexts");
+
+        _damageTextPool.Initialize(DamageText);
+        _coinEffectPool.Initialize(CoinEffect,_damageTexts);
+        _diaEffectPool.Initialize(DiaEffect,_damageTexts);
     }
-    private void Start()
+    public void GetEffect(int score)
     {
+        for (int i = 0; i < 10; ++i)
+        {
+            _coinEffectPool.GetCoinEffectFromPool().Initialize();
+            _diaEffectPool.GetDiaEffectFromPool().Initialize();
+        }
+    }
+    public void GameStart()
+    {
+        _damage = 10;
+        _isJump = false;
+        _comboCount = 1;
+        _cam.transform.parent = transform;
+
         AddEvent();
+        PlayerModel.SetATK(_damage);
+    }
+    public void GameEnd()
+    {
+        RemoveEvent();
+        _cam.transform.parent = default;
+        _cam.transform.position = _camStartPos;
     }
     private void Update()
     {
@@ -59,6 +96,8 @@ public class Player : MonoBehaviour
         PlayerModel.OnDefenseExit += DefenseExit;
         PlayerModel.OnAttack -= Attack;
         PlayerModel.OnAttack += Attack;
+        PlayerModel.OnBuy -= BuyATK;
+        PlayerModel.OnBuy += BuyATK;
     }
     private void RemoveEvent()
     {
@@ -67,11 +106,12 @@ public class Player : MonoBehaviour
         PlayerModel.OnDefenseStart -= DefenseStart;
         PlayerModel.OnDefenseExit -= DefenseExit;
         PlayerModel.OnAttack -= Attack;
+        PlayerModel.OnBuy -= BuyATK;
 
     }
     public void JumpReady()
     {
-
+        
     }
     private readonly int Jump_01 = Animator.StringToHash("Jump_01");
     private readonly int Jump_02 = Animator.StringToHash("Jump_02");
@@ -131,7 +171,23 @@ public class Player : MonoBehaviour
     {
         int exDamage = _damage / 10;
         int damage = _damage + Random.Range(-exDamage, exDamage + 1);
+        DamageText text = _damageTextPool.GetDamageTextFromPool();
+        text.transform.SetParent(_damageTexts, false);
+        text.Initialize((_comboCount % 2) == 1 ? Vector2.left : Vector2.right);
+        text.gameObject.GetComponentAssert<TMP_Text>().text = Util.Nums.GetNumString(damage);
+
         return damage;
+    }
+    public void BuyATK()
+    {
+        if (Managers.Instance.GameManager.Score < 1000)
+        {
+            return;
+        }
+
+        Managers.Instance.GameManager.OnGetScore(-1000);
+        _damage += 10;
+        PlayerModel.SetATK(_damage);
     }
     private readonly int Idle_01 = Animator.StringToHash("Idle_01");
     private readonly int Idle_02 = Animator.StringToHash("Idle_02");
