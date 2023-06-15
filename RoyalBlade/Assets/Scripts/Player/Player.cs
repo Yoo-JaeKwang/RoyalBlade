@@ -1,6 +1,7 @@
 using Cysharp.Text;
 using TMPro;
 using UnityEngine;
+using Util;
 
 public class Player : MonoBehaviour
 {
@@ -13,8 +14,6 @@ public class Player : MonoBehaviour
     private Animator _am;
     private CircleCollider2D _col;
     private Attack _attack;
-    private Camera _cam;
-    private Vector3 _camStartPos;
     public DamageText DamageText;
     private Transform _damageTexts;
     private DamageTextPool _damageTextPool = new();
@@ -23,15 +22,13 @@ public class Player : MonoBehaviour
     private CoinEffectPool _coinEffectPool = new();
     public DiaEffect DiaEffect;
     private DiaEffectPool _diaEffectPool = new();
-
+    private GameObject _defenseEffect;
     private void Awake()
     {
         _rb = gameObject.GetComponentAssert<Rigidbody2D>();
         _am = gameObject.GetComponentAssert<Animator>();
         _col = gameObject.GetComponentAssert<CircleCollider2D>();
         _col.enabled = false;
-        _cam = Camera.main;
-        _camStartPos = _cam.transform.position;
 
         _effects = transform.FindAssert("Effects");
         _jumpEffect = _effects.FindAssert("JumpEffect").gameObject;
@@ -44,6 +41,9 @@ public class Player : MonoBehaviour
             _attackEffects[i].Init(i);
             _attackEffects[i].gameObject.SetActive(false);
         }
+        _defenseEffect = _effects.FindAssert("DefenseEffect").gameObject;
+        _defenseEffect.SetActive(false);
+
         _attack = transform.FindAssert("Attack").GetComponentAssert<Attack>();
 
         _damageTexts = transform.FindAssert("DamageTexts");
@@ -62,19 +62,19 @@ public class Player : MonoBehaviour
     }
     public void GameStart()
     {
-        _damage = 10;
+        _damage = 20;
         _isJump = false;
         _comboCount = 1;
-        _cam.transform.parent = transform;
+        CMCamera.SetCameraFollow(transform);
 
         AddEvent();
         PlayerModel.SetATK(_damage);
     }
     public void GameEnd()
     {
+        _am.Play(Idle_01);
         RemoveEvent();
-        _cam.transform.parent = default;
-        _cam.transform.position = _camStartPos;
+        CMCamera.SetCameraFollow(default);
     }
     private void Update()
     {
@@ -96,8 +96,10 @@ public class Player : MonoBehaviour
         PlayerModel.OnDefenseExit += DefenseExit;
         PlayerModel.OnAttack -= Attack;
         PlayerModel.OnAttack += Attack;
-        PlayerModel.OnBuy -= BuyATK;
-        PlayerModel.OnBuy += BuyATK;
+        PlayerModel.OnBuyATK -= BuyATK;
+        PlayerModel.OnBuyATK += BuyATK;
+        PlayerModel.OnBuyHP -= Managers.Instance.GameManager.OnBuyHP;
+        PlayerModel.OnBuyHP += Managers.Instance.GameManager.OnBuyHP;
     }
     private void RemoveEvent()
     {
@@ -106,12 +108,17 @@ public class Player : MonoBehaviour
         PlayerModel.OnDefenseStart -= DefenseStart;
         PlayerModel.OnDefenseExit -= DefenseExit;
         PlayerModel.OnAttack -= Attack;
-        PlayerModel.OnBuy -= BuyATK;
-
+        PlayerModel.OnBuyATK -= BuyATK;
+        PlayerModel.OnBuyHP -= Managers.Instance.GameManager.OnBuyHP;
     }
     public void JumpReady()
     {
-        
+        if (_isJump)
+        {
+            return;
+        }
+
+        CMCamera.ZoomIn();
     }
     private readonly int Jump_01 = Animator.StringToHash("Jump_01");
     private readonly int Jump_02 = Animator.StringToHash("Jump_02");
@@ -122,11 +129,15 @@ public class Player : MonoBehaviour
             return;
         }
 
+        CMCamera.ZoomOut();
+
         _isJump = true;
         _jumpEffect.SetActive(false);
         _jumpEffect.SetActive(true);
         _rb.AddForce(Vector2.up * JumpSpeed);
         _am.SetTrigger((_comboCount % 2) == 1 ? Jump_01 : Jump_02);
+
+        Managers.Instance.SoundManager.PlaySound(SoundID.Jump);
     }
     private readonly int Defense = Animator.StringToHash("Defense");
     public void DefenseStart()
@@ -148,6 +159,11 @@ public class Player : MonoBehaviour
             _rb.velocity = default;
             _rb.AddForce(Vector2.down * JumpSpeed);
             DefenseExit();
+
+            _defenseEffect.SetActive(false);
+            _defenseEffect.SetActive(true);
+
+            Managers.Instance.SoundManager.PlaySound(SoundID.Defense).SetVolume(0.6f);
         }
     }
     private int _comboCount = 1;
@@ -165,6 +181,8 @@ public class Player : MonoBehaviour
         }
 
         _attack.OnAttack();
+
+        Managers.Instance.SoundManager.PlaySound(SoundID.Attack);
     }
 
     public int OnAttack()
@@ -198,6 +216,8 @@ public class Player : MonoBehaviour
             _isJump = false;
             _jumpEffect.SetActive(true);
             _am.Play((_comboCount % 2) == 1 ? Idle_01 : Idle_02);
+
+            Managers.Instance.SoundManager.PlaySound(SoundID.Land);
         }
     }
 }

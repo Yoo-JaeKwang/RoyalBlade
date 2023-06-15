@@ -56,7 +56,8 @@ public class PlayerPresenter : Presenter
         _playerView.DefenseButton.OnPointerDownAsObservable().Subscribe(OnDefenseButtonDown).AddTo(_compositeDisposable);
         _playerView.DefenseButton.OnPointerUpAsObservable().Subscribe(OnDefenseButtonUp).AddTo(_compositeDisposable);
         _playerView.AttackButton.OnPointerDownAsObservable().Subscribe(OnAttack).AddTo(_compositeDisposable);
-        _playerView.ATKBuyButton.OnPointerDownAsObservable().Subscribe(OnBuy).AddTo(_compositeDisposable);
+        _playerView.ATKBuyButton.OnPointerDownAsObservable().Subscribe(OnBuyATK).AddTo(_compositeDisposable);
+        _playerView.HPBuyButton.OnPointerDownAsObservable().Subscribe(OnBuyHP).AddTo(_compositeDisposable);
     }
     private void OnJumpButtonDown(PointerEventData pointerEventData)
     {
@@ -78,8 +79,12 @@ public class PlayerPresenter : Presenter
     {
         PlayerModel.Attack();
     }
-    private void OnBuy(PointerEventData pointerEventData)
+    private void OnBuyATK(PointerEventData pointerEventData)
     {
-        PlayerModel.Buy();
+        PlayerModel.BuyATK();
+    }
+    private void OnBuyHP(PointerEventData pointerEventData)
+    {
+        PlayerModel.BuyHP();
     }
 }

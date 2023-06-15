@@ -12,7 +12,8 @@ public static class PlayerModel
     public static event Action OnDefenseStart;
     public static event Action OnDefenseExit;
     public static event Action OnAttack;
-    public static event Action OnBuy;
+    public static event Action OnBuyATK;
+    public static event Action OnBuyHP;
     public static void SetHP(int hp)
     {
         HP.Value = hp;
@@ -49,8 +50,12 @@ public static class PlayerModel
     {
         OnAttack?.Invoke();
     }
-    public static void Buy()
+    public static void BuyATK()
     {
-        OnBuy?.Invoke();
+        OnBuyATK?.Invoke();
+    }
+    public static void BuyHP()
+    {
+        OnBuyHP?.Invoke();
     }
 }

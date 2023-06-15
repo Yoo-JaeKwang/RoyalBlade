@@ -20,6 +20,15 @@ public class MonsterManager : MonoBehaviour
     {
         _wave = 1;
         _waveCount = 0;
+        for (int i = 0; i < CurMonsters.Count; ++i)
+        {
+            if (CurMonsters[i].IsReleased)
+            {
+                continue;
+            }
+
+            CurMonsters[i].Release();
+        }
         CurMonsters.Clear();
         SummonMonster();
     }

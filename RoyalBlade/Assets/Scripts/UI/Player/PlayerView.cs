@@ -14,6 +14,7 @@ public class PlayerView : View
     public Button DefenseButton { get; private set; }
     public Button AttackButton { get; private set; }
     public Button ATKBuyButton { get; private set; }
+    public Button HPBuyButton { get; private set; }
     private void Awake()
     {
         Transform HPGroup = transform.FindAssert("HPGroup");
@@ -30,10 +31,20 @@ public class PlayerView : View
         DefenseButton = transform.FindAssert("DefenseButton").GetComponentAssert<Button>();
         AttackButton = transform.FindAssert("AttackButton").GetComponentAssert<Button>();
         ATKBuyButton = transform.FindAssert("ATKBuyButton").GetComponentAssert<Button>();
+        HPBuyButton = transform.FindAssert("HPBuyButton").GetComponentAssert<Button>();
 
         _onAttackCo = OnAttackCo();
     }
-    public void OnAttack() => StartCoroutine(_onAttackCo);
+    public void OnAttack()
+    {
+        if (Managers.Instance.GameManager.PlayerHP <= 0)
+        {
+            return;
+        }
+
+        StartCoroutine(_onAttackCo);
+    }
+
     private readonly Color Start = new(1, 0, 0, 0);
     private readonly Color End = new(1, 0, 0, 0.5f);
     private float _elapsedTime;

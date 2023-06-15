@@ -27,6 +27,12 @@ public class TitleView : View
 
         _moveCo = MoveCo();
     }
+    private void OnEnable()
+    {
+        TitleImage.transform.position = ImagePos[0];
+        StartText.transform.position = TextPos[0];
+        StartPanel.gameObject.SetActive(true);
+    }
     public void Move() => StartCoroutine(_moveCo);
     private float _elapsedTime;
     private IEnumerator _moveCo;
@@ -41,7 +47,7 @@ public class TitleView : View
             if (_elapsedTime > 1)
             {
                 _elapsedTime = 0;
-
+                
                 StopCoroutine(_moveCo);
             }
             yield return null;

@@ -14,6 +14,7 @@ public class Monster : MonoBehaviour
         HP = hp;
         Score = score;
         Index = index;
+        IsReleased = false;
     }
     public void OnDefense()
     {
@@ -29,7 +30,7 @@ public class Monster : MonoBehaviour
         if (HP <= 0)
         {
             OnDead?.Invoke(Score);
-
+            IsReleased = true;
             _pool.Release(this);
 
             if (Managers.Instance.MonsterManager.CurMonsters.Count == Index + 1)
@@ -46,9 +47,8 @@ public class Monster : MonoBehaviour
             MonsterModel.SetMaxHealth(next.HP);
         }
     }
+    public bool IsReleased { get; set; }
     private Util.ObjectPool<Monster> _pool;
-    /// <summary>
-    /// 반환되어야할 풀의 주소를 설정합니다.
-    /// </summary>
     public void SetPoolRef(ObjectPool<Monster> pool) => _pool = pool;
+    public void Release() =>_pool.Release(this);
 }
